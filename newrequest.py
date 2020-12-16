@@ -1,5 +1,6 @@
 import argparse
 import requests
+import time
 
 import xml.etree.ElementTree as ET
 
@@ -8,13 +9,11 @@ from ws4py.client.threadedclient import WebSocketClient
 
 namespace = '{http://www.w3.org/1999/xhtml}'
 
-last_routine = None
-number_built = 100
 
-
-class EventHandler():
+class EventHandler:
     def __init__(self):
         self.last_routine = None
+        self.last_time = 0
         self.number_built = 100
 
     def extract_event(self, event):
@@ -31,10 +30,14 @@ class EventHandler():
 
         if event_num == 1:
             if self.last_routine == "station2" and event_text == "main":
+                print("Station cycle complete")
                 self.number_built += 1
+                cycle_time = time.time() - self.last_time
             self.last_routine = event_text
 
+
 event_handler = EventHandler()
+
 
 class RobWebSocketClient(WebSocketClient):
     def opened(self):
@@ -47,7 +50,7 @@ class RobWebSocketClient(WebSocketClient):
         print("#########EVENT###########")
         event_num, event_text = event_handler.extract_event(message)
         print("Event number: ", event_num, "  Raw Text: ", event_text)
-        #process_event(event_num, event_text)
+        # process_event(event_num, event_text)
         print("#########EVENT###########")
 
 
