@@ -33,32 +33,30 @@ def print_event(evt):
     root = ET.fromstring(evt)
     if root.findall(".//{0}li[@class='pnl-ctrlstate-ev']".format(namespace)):
         print("\tController State : " + root.find(".//{0}li[@class='pnl-ctrlstate-ev']/{0}span".format(namespace)).text)
-    elif root.findall(".//{0}li[@class='pnl-opmode-ev']".format(namespace)):
-        print("\tOperation Mode : " + root.find(".//{0}li[@class='pnl-opmode-ev']/{0}span".format(namespace)).text)
-    elif root.findall(".//{0}li[@class='pnl-speedratio-ev']".format(namespace)):
-        print("\tSpeed Ratio : " + root.find(".//{0}li[@class='pnl-speedratio-ev']/{0}span".format(namespace)).text)
-    elif root.findall(".//{0}li[@class='pnl-custom_DO_2-ev']".format(namespace)):
-        print("\tSignal State : " + root.find(".//{0}li[@class='pnl-custom_DO_2-ev']/{0}span".format(namespace)).text)
-    elif root.findall(".//{0}li[@class='pnl-coldetstate-ev']".format(namespace)):
+    if root.findall(".//{0}li[@class='pnl-opmode-ev']".format(namespace)):
+      print("\tOperation Mode : " + root.find(".//{0}li[@class='pnl-opmode-ev']/{0}span".format(namespace)).text)
+    if root.findall(".//{0}li[@class='pnl-speedratio-ev']".format(namespace)):
+      print("\tSpeed Ratio : " + root.find(".//{0}li[@class='pnl-speedratio-ev']/{0}span".format(namespace)).text)
+    if root.findall(".//{0}li[@class='pnl-custom_DO_2-ev']".format(namespace)):
+      print("\tSignal State : " + root.find(".//{0}li[@class='pnl-custom_DO_2-ev']/{0}span".format(namespace)).text)
+    if root.findall(".//{0}li[@class='pnl-coldetstate-ev']".format(namespace)):
         print("\tColdetstate : " + root.find(".//{0}li[@class='pnl-coldetstate-ev']/{0}span".format(namespace)).text)
-    else:
-        print("Event not categorized!")
 
-def extract_event(evt):
-    print("Extracting event")
-    root = ET.fromstring(evt)
-    if root.findall(".//{0}li[@class='pnl-ctrlstate-ev']".format(namespace)):
-        return root.find(".//{0}li[@class='pnl-ctrlstate-ev']/{0}span".format(namespace)).text
-    elif root.findall(".//{0}li[@class='pnl-opmode-ev']".format(namespace)):
-        return root.find(".//{0}li[@class='pnl-opmode-ev']/{0}span".format(namespace)).text
-    elif root.findall(".//{0}li[@class='pnl-speedratio-ev']".format(namespace)):
-        return root.find(".//{0}li[@class='pnl-speedratio-ev']/{0}span".format(namespace)).text
-    elif root.findall(".//{0}li[@class='pnl-custom_DO_2-ev']".format(namespace)):
-        return root.find(".//{0}li[@class='pnl-custom_DO_2-ev']/{0}span".format(namespace)).text
-    elif root.findall(".//{0}li[@class='pnl-coldetstate-ev']".format(namespace)):
-        return root.find(".//{0}li[@class='pnl-coldetstate-ev']/{0}span".format(namespace))
-    elif root.findall(".//{0}li[@class='rap-pcp-ev']".format(namespace)):
-        return root.find(".//{0}li[@class='rap-pcp-ev']/{0}span".format(namespace))
+#def extract_event(evt):
+#    print("Extracting event")
+#    root = ET.fromstring(evt)
+#    if root.findall(".//{0}li[@class='pnl-ctrlstate-ev']".format(namespace)):
+#        return root.find(".//{0}li[@class='pnl-ctrlstate-ev']/{0}span".format(namespace)).text
+#    elif root.findall(".//{0}li[@class='pnl-opmode-ev']".format(namespace)):
+#        return root.find(".//{0}li[@class='pnl-opmode-ev']/{0}span".format(namespace)).text
+#    elif root.findall(".//{0}li[@class='pnl-speedratio-ev']".format(namespace)):
+#        return root.find(".//{0}li[@class='pnl-speedratio-ev']/{0}span".format(namespace)).text
+#    elif root.findall(".//{0}li[@class='pnl-custom_DO_2-ev']".format(namespace)):
+#        return root.find(".//{0}li[@class='pnl-custom_DO_2-ev']/{0}span".format(namespace)).text
+#    elif root.findall(".//{0}li[@class='pnl-coldetstate-ev']".format(namespace)):
+#        return root.find(".//{0}li[@class='pnl-coldetstate-ev']/{0}span".format(namespace))
+#    elif root.findall(".//{0}li[@class='rap-pcp-ev']".format(namespace)):
+#        return root.find(".//{0}li[@class='rap-pcp-ev']/{0}span".format(namespace))
 
 
 # This class encapsulates the Web Socket Callbacks functions.
@@ -72,14 +70,14 @@ class RobWebSocketClient(WebSocketClient):
     def received_message(self, event_xml):
         print("Message recived!")
         if event_xml.is_text:
-            event = extract_event(event_xml.data.decode("utf-8"))
+            #event = extract_event(event_xml.data.decode("utf-8"))
             print("Events : ")
             print_event(event_xml.data.decode("utf-8"))
 
-            if event == "MANR" or event == "AUTO":
-                enum_robot_mode.state(event)
-            elif event == "motoron" or event == "motoroff":
-                enum_robot_motor_state.state(event)
+            #if event == "MANR" or event == "AUTO":
+            #    enum_robot_mode.state(event)
+            #elif event == "motoron" or event == "motoroff":
+            #    enum_robot_motor_state.state(event)
         else:
             print("Received Illegal Event " + str(event_xml))
 
@@ -103,12 +101,12 @@ class RobCom:
         payload = {'resources': ['1', '2', '3'],
                    #'1': '/rw/panel/iosystem/signals/EtherNetIP/ManipulatorIO/custom_DO_2',
                    #'1-p': '1',
-                   #'2': '/rw/panel/ctrl-state',
-                   #'2-p': '1',
-                   '1': '/rw/panel/opmode',
+                   '1': '/rw/panel/ctrl-state',
                    '1-p': '1',
-                   '2': 'rw/rapid/tasks/T_ROB1/pcp',
-                   '2-p': '1'}
+                   '2': '/rw/panel/opmode',
+                   '2-p': '1',
+                   '3': 'rw/rapid/tasks/T_ROB1/pcp',
+                   '3-p': '1'}
 
         content_header = {'Content-Type': 'application/x-www-form-urlencoded;v=2.0'}
         try:
